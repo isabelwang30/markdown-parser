@@ -17,20 +17,29 @@ public class MarkdownParse {
             int openParen = markdown.indexOf("(", closeBracket);
             int closeParen = markdown.indexOf(")", openParen);
             
+            // if no more pairs of brackets or parentheses are found, end
             if (openBracket == -1 || closeBracket == -1 || openParen == -1 
                 || closeParen == -1) 
             {
                 break;
             }
 
-            if (openBracket == 0) {
+            // don't add the string inside the parentheses if it contains spaces
+            if (markdown.substring(openParen + 1, closeParen).contains(" ")) {
+                currentIndex = closeParen + 1;
+                continue;
+            }
+            // add a link if it's on the first line
+            else if (openBracket == 0) {
                 toReturn.add(markdown.substring(openParen + 1, closeParen));
             }
+            // add the link if it's not an image
             else if (markdown.charAt(openBracket - 1) != '!' 
                 && openParen == closeBracket + 1) 
             {
                 toReturn.add(markdown.substring(openParen + 1, closeParen));
             }
+
             currentIndex = closeParen + 1;
         }
         return toReturn;
