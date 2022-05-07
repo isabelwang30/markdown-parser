@@ -1,6 +1,4 @@
 import static org.junit.Assert.*;
-
-import java.beans.Transient;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
