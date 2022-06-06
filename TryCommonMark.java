@@ -1,8 +1,9 @@
+import java.util.ArrayList;
+
 import org.commonmark.node.*;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 
-// this class can be defined anywhere in the file
 class WordCountVisitor extends AbstractVisitor {
     int wordCount = 0;
 
@@ -18,6 +19,23 @@ class WordCountVisitor extends AbstractVisitor {
     }
 }
 
+class LinkVisitor extends AbstractVisitor {
+    ArrayList<String> links = new ArrayList<>();
+
+    @Override
+    public void visit(Link link) {
+        // This is called for all Link nodes.
+
+        // Count links
+        if (link.getDestination() != null) {
+            links.add(link.getDestination());
+        }
+
+        // Descend into children (could be omitted in this case because Text nodes don't have children).
+        visitChildren(link);
+    }
+}
+
 class TryCommonMark {
     public static void main(String[] args) {
         Parser parser = Parser.builder().build();
@@ -28,10 +46,12 @@ class TryCommonMark {
         System.out.println(output);
 
         // this part actually does the computation
-        Node node = parser.parse("Example\n=======\n\nSome more text");
-        WordCountVisitor visitor = new WordCountVisitor();
+        String text = "[some link](google.com) [another link](apple.com)" 
+            + "[not a link] (something.org)";
+        Node node = parser.parse(text);
+        LinkVisitor visitor = new LinkVisitor();
         node.accept(visitor);
-        int wordCount = visitor.wordCount;  // 4
-        System.out.println(wordCount);
+        ArrayList<String> links = visitor.links;
+        System.out.println(links);
     }
 }
